@@ -43,6 +43,10 @@ INSTALLED_APPS = [
     'apartments',
     'rest_framework',
     'corsheaders',
+    'rest_framework_simplejwt',
+    #phone numbers field
+    'phonenumber_field'
+
 ]
 
 MIDDLEWARE = [
@@ -144,3 +148,5 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     )
 }
+
+PHONENUMBER_DEFAULT_REGION = "CZ"

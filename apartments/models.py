@@ -1,10 +1,9 @@
 from django.db import models
-
-# Create your models here.
 from django.contrib.auth.models import AbstractUser
+from phonenumber_field.modelfields import PhoneNumberField
 
 class User(AbstractUser):
-    pass
+    phone = PhoneNumberField(unique=True, null=True, blank=True)
 
 class Schedule(models.Model):
     date = models.DateField()
@@ -29,6 +28,7 @@ class Booking(models.Model):
     apartments = models.ForeignKey('apartments.Apartment', on_delete=models.CASCADE)
     price = models.ForeignKey('Price', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+    booking_days = models.ForeignKey('apartments.Schedule', on_delete=models.CASCADE)
     paid = models.BooleanField(default=False)
 
 

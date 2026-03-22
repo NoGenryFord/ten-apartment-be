@@ -51,6 +51,18 @@ wheels = [
 ]
 
 [[package]]
+name = "django-phonenumber-field"
+version = "8.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/87/bf/8aa60c9834773b955dff1ddea842e361e8daaf6b0945d5bfc29fc66d53ab/django_phonenumber_field-8.4.0.tar.gz", hash = "sha256:2b83e843dac35eec6a69880a166487235b737a71a1e38c9a52e5ad67d6996083", size = 45512, upload-time = "2025-11-24T15:09:51.904Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8b/a3/f6b85a9246e22cf719752ad83f5e95aa9ba12419b2f9eff70f20d30e55df/django_phonenumber_field-8.4.0-py3-none-any.whl", hash = "sha256:7a1cb3a6456edb54d879f11ffa0acb227ded08c93b587035d0f28093f0e46511", size = 69528, upload-time = "2025-11-24T15:09:45.479Z" },
+]
+
+[[package]]
 name = "django-stubs"
 version = "6.0.1"
 source = { registry = "https://pypi.org/simple" }
@@ -139,6 +151,24 @@ wheels = [
 ]
 
 [[package]]
+name = "phonenumbers"
+version = "9.0.26"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/43/a3/3720326431a23c8e8944a07cdf51520608f1fded87e32e991116fdb801bd/phonenumbers-9.0.26.tar.gz", hash = "sha256:9e582c827f0f5503cddeebef80099475a52ffa761551d8384099c7ec71298cbf", size = 2298587, upload-time = "2026-03-13T11:34:19.656Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/dd/93/8825b3c9c23e595f34aa11735b29550c27a0f57fe4fc8c9ee737390566ca/phonenumbers-9.0.26-py2.py3-none-any.whl", hash = "sha256:ff473da5712965b6c7f7a31cbff8255864df694eb48243771133ecb761e807c1", size = 2584969, upload-time = "2026-03-13T11:34:16.671Z" },
+]
+
+[[package]]
+name = "phonenumberslite"
+version = "9.0.26"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/df/7d/83054d0569997ce520fc0facc4591bd421c231a5e7a74879cad87227e936/phonenumberslite-9.0.26.tar.gz", hash = "sha256:0c0d882ec499533bd016c667f0f3c41c34fbf3a1cf2b33460c87ed68d804f362", size = 288740, upload-time = "2026-03-13T11:34:02.291Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4e/d8/67957b95d4405ea1961926f992f5e14fd86af710adab1fc25fdeec3ea550/phonenumberslite-9.0.26-py2.py3-none-any.whl", hash = "sha256:53be71549c4441d1c930b2f130ac64548c83585508197b8d64d64aa3973f32d7", size = 473316, upload-time = "2026-03-13T11:34:00.576Z" },
+]
+
+[[package]]
 name = "pillow"
 version = "12.1.1"
 source = { registry = "https://pypi.org/simple" }
@@ -215,11 +245,14 @@ dependencies = [
     { name = "django" },
     { name = "django-cors-headers" },
     { name = "django-filter" },
+    { name = "django-phonenumber-field" },
     { name = "djangorestframework" },
     { name = "djangorestframework-simplejwt" },
     { name = "djangorestframework-stubs" },
     { name = "dotenv" },
     { name = "markdown" },
+    { name = "phonenumbers" },
+    { name = "phonenumberslite" },
     { name = "pillow" },
     { name = "psycopg2" },
 ]
@@ -229,11 +262,14 @@ requires-dist = [
     { name = "django", specifier = ">=6.0.3" },
     { name = "django-cors-headers", specifier = ">=4.9.0" },
     { name = "django-filter", specifier = ">=25.2" },
+    { name = "django-phonenumber-field", specifier = ">=8.4.0" },
     { name = "djangorestframework", specifier = ">=3.17.0" },
     { name = "djangorestframework-simplejwt", specifier = ">=5.5.1" },
     { name = "djangorestframework-stubs", specifier = ">=3.16.8" },
     { name = "dotenv", specifier = ">=0.9.9" },
     { name = "markdown", specifier = ">=3.10.2" },
+    { name = "phonenumbers", specifier = ">=9.0.26" },
+    { name = "phonenumberslite", specifier = ">=9.0.26" },
     { name = "pillow", specifier = ">=12.1.1" },
     { name = "psycopg2", specifier = ">=2.9.11" },
 ]
