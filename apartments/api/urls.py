@@ -6,7 +6,10 @@ TokenObtainPairView,
 TokenRefreshView,
 )
 
+from .view import ApartmentViewSet
+
 router = routers.DefaultRouter()
+router.register(r'apartments', ApartmentViewSet, basename='apartments')
 
 urlpatterns = [
     path('', include(router.urls)),
