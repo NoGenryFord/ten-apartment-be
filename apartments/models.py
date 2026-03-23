@@ -22,8 +22,8 @@ class Schedule(models.Model):
         MAINTENANCE = 'maintenance', 'Maintenance'
 
     date = models.DateField()
-    apartment = models.ForeignKey('apartments.Apartment', on_delete=models.CASCADE, related_name='schedule')
-    price = models.ForeignKey('apartments.Price', on_delete=models.PROTECT)
+    apartment = models.ForeignKey('apartments.Apartments', on_delete=models.CASCADE, related_name='schedule')
+    price = models.ForeignKey('apartments.Prices', on_delete=models.PROTECT)
     status = models.CharField(max_length=25, choices=Status.choices, default=Status.AVAILABLE)
 
     class Meta:
@@ -33,18 +33,18 @@ class Schedule(models.Model):
     def __str__(self):
         return f'{self.apartment} - {self.date} - {self.status}'
 
-class Apartment(models.Model):
+class Apartments(models.Model):
     """
     Модель для хранения квартир.
     type - ссылка на тип квартиры, для удобства фильтрации и отображения. Например: Эконом, Стандарт, Премиум.
     """
     name = models.CharField(max_length=100)
-    type = models.ForeignKey('apartments.ApartmentType', on_delete=models.CASCADE)
+    type = models.ForeignKey('apartments.ApartmentTypes', on_delete=models.CASCADE)
     description = models.TextField()
     photo = models.ImageField(upload_to='apartments/', null=True, blank=True)
     video = models.FileField(upload_to='apartments/', null=True, blank=True)
 
-class ApartmentType(models.Model):
+class ApartmentTypes(models.Model):
     """
     Для типа квартиры. Например: Эконом, Стандарт, Премиум.
     В моделе Квартиры её тип ссылать на эту таблицу.
@@ -54,7 +54,7 @@ class ApartmentType(models.Model):
     def __str__(self):
         return self.name
 
-class Price(models.Model):
+class Prices(models.Model):
     """
     Для переиспользования цены, и адаптации под разные дни: выходные, будни, праздники и т.д. И для разных типов апартаментов
     """
@@ -70,8 +70,8 @@ class Booking(models.Model):
         EXPIRED = 'expired', 'Expired' #Срок оплаты/бронированния истек
 
     user = models.ForeignKey('apartments.User', on_delete=models.CASCADE, related_name='booking')
-    apartments = models.ForeignKey('apartments.Apartment', on_delete=models.CASCADE)
-    slots = models.ManyToManyField(Schedule, through='BookingSlot')
+    apartments = models.ForeignKey('apartments.Apartments', on_delete=models.CASCADE)
+    slots = models.ManyToManyField(Schedule, through='BookingSlots')
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=25, choices=Status.choices, default=Status.PENDING)
     reserved_until = models.DateTimeField(null=True, blank=True) #'Deadline' оплаты
@@ -81,7 +81,7 @@ class Booking(models.Model):
     def __str__(self):
         return f'Booking {self.pk} by {self.user} - {self.apartments} - {self.status}'
 
-class BookingSlot(models.Model):
+class BookingSlots(models.Model):
     """
         price_snapshot — цена дня на момент бронирования.
     """
