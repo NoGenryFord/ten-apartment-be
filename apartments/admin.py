@@ -30,3 +30,13 @@ class ScheduleAdmin(admin.ModelAdmin):
     list_display = ('date', 'apartment', 'price', 'status')
     search_fields = ('date', 'apartment__name', 'price__label', 'status')
     list_filter = ('status', 'price', 'apartment')
+
+@admin.register(Price)
+class PriceAdmin(admin.ModelAdmin):
+    list_display = ('price', 'label')
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('username', 'first_name', 'last_name', 'email', 'phone', 'is_staff', 'is_superuser', 'is_active')
+    search_fields = ('username', 'first_name', 'last_name', 'email', 'phone')
+    list_filter = ('is_staff', 'is_superuser', 'is_active')
