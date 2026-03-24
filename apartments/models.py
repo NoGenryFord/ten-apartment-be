@@ -48,6 +48,9 @@ class Apartment(models.Model):
         return self.name
 
 class ApartmentPhoto(models.Model):
+    """
+    Модель для хранения нескольких фото на одну квартиру. Сортировка по полю order.
+    """
     apartments = models.ForeignKey('apartments.Apartment',
                                    on_delete=models.CASCADE,
                                    related_name='photos')
@@ -55,6 +58,9 @@ class ApartmentPhoto(models.Model):
     order = models.PositiveIntegerField(default=0)
 
 class ApartmentVideo(models.Model):
+    """
+    Модель для хранения нескольких видео на одну квартиру. Сортировка по полю order.
+    """
     apartments = models.ForeignKey('apartments.Apartment',
                                    on_delete=models.CASCADE,
                                    related_name='videos')
