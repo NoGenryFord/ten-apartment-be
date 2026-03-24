@@ -3,7 +3,7 @@ from apartments.models import Apartment, Schedule
 
 class ApartmentSerializer(serializers.ModelSerializer):
     url_obj = serializers.HyperlinkedIdentityField(
-        view_name='apartment-detail',
+        view_name='apartments-detail',
         lookup_field='pk'
     )
 
