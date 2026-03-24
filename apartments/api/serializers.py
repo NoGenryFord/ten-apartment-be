@@ -9,8 +9,8 @@ class ApartmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Apartment
-        fields = ['id', 'name', 'type', 'description', 'photo', 'video', 'url_obj']
-        read_only_fields = ['id', 'name', 'type', 'description', 'photo', 'video']
+        fields = ['id', 'name', 'type', 'description', 'url_obj']
+        read_only_fields = ['id', 'name', 'type', 'description']
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
