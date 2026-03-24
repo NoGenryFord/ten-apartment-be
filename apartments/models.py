@@ -62,8 +62,15 @@ class Price(models.Model):
     label = models.CharField(max_length=100)
 
 class Booking(models.Model):
+    """
+    Бронирование пользователя.
+    Всегда сохраняется в историю, не зависимо от статуса Успех, Отмены итд.
+    """
 
     class Status(models.TextChoices):
+        """
+        Заготовленные варианты окончания бронирования.
+        """
         PENDING = 'pending', 'Pending' #Ожидание Оплаты
         CONFIRMED = 'confirmed', 'Confirmed' #Подтвержденно
         CANCELED = 'canceled', 'Canceled' #Отмененно
@@ -84,6 +91,7 @@ class Booking(models.Model):
 class BookingSlot(models.Model):
     """
         price_snapshot — цена дня на момент бронирования.
+        Один слот на один день в Букинге.
     """
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
     schedule = models.ForeignKey(Schedule, on_delete=models.PROTECT)
