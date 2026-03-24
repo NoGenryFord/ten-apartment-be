@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
+
 from phonenumber_field.modelfields import PhoneNumberField
 
 class User(AbstractUser):
@@ -23,7 +25,10 @@ class Schedule(models.Model):
 
     date = models.DateField()
     apartment = models.ForeignKey('apartments.Apartment', on_delete=models.CASCADE, related_name='schedule')
-    price = models.ForeignKey('apartments.Price', on_delete=models.PROTECT)
+    price = models.ForeignKey('apartments.Price',
+                              on_delete=models.PROTECT,
+                              blank=True, null=True,
+                              related_name='schedule')
     status = models.CharField(max_length=25, choices=Status.choices, default=Status.AVAILABLE)
 
     class Meta:
@@ -32,6 +37,10 @@ class Schedule(models.Model):
 
     def __str__(self):
         return f'{self.apartment} - {self.date} - {self.status}'
+
+    def clean(self):
+        if self.status != self.Status.MAINTENANCE and self.price is None:
+            raise ValidationError('Price must be set for non-maintenance schedules.')
 
 class Apartment(models.Model):
     """
