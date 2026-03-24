@@ -2,10 +2,9 @@ from rest_framework import serializers
 from apartments.models import Apartments, Schedule
 
 class ApartmentSerializer(serializers.ModelSerializer):
-    url_obj = serializers.HyperlinkedRelatedField(
+    url_obj = serializers.HyperlinkedIdentityField(
         view_name='apartment-detail',
-        lookup_field='pk',
-        read_only=True
+        lookup_field='pk'
     )
 
     class Meta:
