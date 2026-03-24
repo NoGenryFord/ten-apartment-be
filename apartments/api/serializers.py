@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apartments.models import Apartments, Schedule
+from apartments.models import Apartment, Schedule
 
 class ApartmentSerializer(serializers.ModelSerializer):
     url_obj = serializers.HyperlinkedIdentityField(
@@ -8,7 +8,7 @@ class ApartmentSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = Apartments
+        model = Apartment
         fields = ['id', 'name', 'type', 'description', 'photo', 'video', 'url_obj']
         read_only_fields = ['id', 'name', 'type', 'description', 'photo', 'video']
 
