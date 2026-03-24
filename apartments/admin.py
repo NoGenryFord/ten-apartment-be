@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Apartment, User, Schedule, Price, ApartmentType, Booking, BookingSlot
+from .models import Apartment, User, Schedule, Price, ApartmentType, Booking, BookingSlot, ApartmentPhoto, ApartmentVideo
 
 @admin.register(Apartment)
 class ApartmentAdmin(admin.ModelAdmin):
@@ -9,11 +9,10 @@ class ApartmentAdmin(admin.ModelAdmin):
     list_filter = ('type',)
     # ordering = ('name', 'type')
 
+@admin.register(ApartmentPhoto)
+class ApartmentPhotoAdmin(admin.ModelAdmin):
+    pass
 
-# Register your models here.
-admin.site.register(User)
-admin.site.register(Schedule)
-admin.site.register(Price)
-admin.site.register(ApartmentType)
-admin.site.register(Booking)
-admin.site.register(BookingSlot)
+@admin.register(ApartmentVideo)
+class ApartmentVideoAdmin(admin.ModelAdmin):
+    pass

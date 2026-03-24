@@ -41,8 +41,22 @@ class Apartment(models.Model):
     name = models.CharField(max_length=100)
     type = models.ForeignKey('apartments.ApartmentType', on_delete=models.CASCADE)
     description = models.TextField()
-    photo = models.ImageField(upload_to='apartments/', null=True, blank=True)
-    video = models.FileField(upload_to='apartments/', null=True, blank=True)
+    # photo = models.ImageField(upload_to='apartments/', null=True, blank=True)
+    # video = models.FileField(upload_to='apartments/', null=True, blank=True)
+
+class ApartmentPhoto(models.Model):
+    apartments = models.ForeignKey('apartments.Apartment',
+                                   on_delete=models.CASCADE,
+                                   related_name='photos')
+    photo = models.ImageField(upload_to='apartments/photos/')
+    order = models.PositiveIntegerField(default=0)
+
+class ApartmentVideo(models.Model):
+    apartments = models.ForeignKey('apartments.Apartment',
+                                   on_delete=models.CASCADE,
+                                   related_name='videos')
+    video = models.FileField(upload_to='apartments/videos/')
+    order = models.PositiveIntegerField(default=0)
 
 class ApartmentType(models.Model):
     """
