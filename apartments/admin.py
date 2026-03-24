@@ -11,7 +11,7 @@ class ApartmentAdmin(admin.ModelAdmin):
 
 @admin.register(ApartmentPhoto)
 class ApartmentPhotoAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('apartments_id', 'photo', 'order')
 
 @admin.register(ApartmentVideo)
 class ApartmentVideoAdmin(admin.ModelAdmin):

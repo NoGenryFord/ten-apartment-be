@@ -44,6 +44,9 @@ class Apartment(models.Model):
     # photo = models.ImageField(upload_to='apartments/', null=True, blank=True)
     # video = models.FileField(upload_to='apartments/', null=True, blank=True)
 
+    def __str__(self):
+        return self.name
+
 class ApartmentPhoto(models.Model):
     apartments = models.ForeignKey('apartments.Apartment',
                                    on_delete=models.CASCADE,
