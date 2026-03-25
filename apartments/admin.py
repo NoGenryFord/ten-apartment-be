@@ -10,12 +10,16 @@ class ApartmentVideoInline(admin.StackedInline):
     model = ApartmentVideo
     extra = 0
 
+class ApartmentScheduleInline(admin.StackedInline):
+    model = Schedule
+    extra = 0
+
 @admin.register(Apartment)
 class ApartmentAdmin(admin.ModelAdmin):
     list_display = ('name', 'type', 'description')
     search_fields = ('name', 'description', 'type')
     list_filter = ('type',)
-    inlines = [ApartmentPhotoInline, ApartmentVideoInline]
+    inlines = [ApartmentScheduleInline, ApartmentPhotoInline, ApartmentVideoInline]
 
 @admin.register(ApartmentPhoto)
 class ApartmentPhotoAdmin(admin.ModelAdmin):
@@ -30,6 +34,10 @@ class ScheduleAdmin(admin.ModelAdmin):
     list_display = ('date', 'apartment', 'price', 'status')
     search_fields = ('date', 'apartment__name', 'price__label', 'status')
     list_filter = ('status', 'price', 'apartment')
+
+    @admin.action(description='Create Schedule for next 30 days')
+    def create_schedule_for_next_30_days(self, request, queryset):
+        pass
 
 @admin.register(Price)
 class PriceAdmin(admin.ModelAdmin):
