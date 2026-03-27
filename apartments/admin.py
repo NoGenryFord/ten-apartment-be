@@ -1,26 +1,33 @@
+import calendar
+
 from django.contrib import admin
+
+#for calendar
+from django.utils.safestring import mark_safe
+from datetime import date
+
+# custom admin
+from .admin_custom.admin_inline import ApartmentScheduleInline, ApartmentPhotoInline, ApartmentVideoInline
+from .admin_custom.calendar_windget import schedule_calendar
+
 
 from .models import Apartment, User, Schedule, Price, ApartmentType, Booking, BookingSlot, ApartmentPhoto, ApartmentVideo
 
-class ApartmentPhotoInline(admin.StackedInline):
-    model = ApartmentPhoto
-    extra = 0
-
-class ApartmentVideoInline(admin.StackedInline):
-    model = ApartmentVideo
-    extra = 0
-
-class ApartmentScheduleInline(admin.StackedInline):
-    model = Schedule
-    extra = 0
-
 @admin.register(Apartment)
 class ApartmentAdmin(admin.ModelAdmin):
+    readonly_fields = ('schedule_calendar',)
+    fields = ('name', 'type', 'description', 'schedule_calendar')
     list_display = ('name', 'type', 'description')
     search_fields = ('name', 'description', 'type')
     list_filter = ('type',)
     inlines = [ApartmentScheduleInline, ApartmentPhotoInline, ApartmentVideoInline]
     list_per_page = 50
+
+    @admin.display(description='Schedule Calendar')
+    def schedule_calendar(self, obj):
+        if not obj.pk:
+            return "Schedule not available"
+        return schedule_calendar(obj)
 
 @admin.register(ApartmentPhoto)
 class ApartmentPhotoAdmin(admin.ModelAdmin):
