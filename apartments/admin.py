@@ -20,6 +20,7 @@ class ApartmentAdmin(admin.ModelAdmin):
     search_fields = ('name', 'description', 'type')
     list_filter = ('type',)
     inlines = [ApartmentScheduleInline, ApartmentPhotoInline, ApartmentVideoInline]
+    list_per_page = 50
 
 @admin.register(ApartmentPhoto)
 class ApartmentPhotoAdmin(admin.ModelAdmin):
@@ -34,6 +35,7 @@ class ScheduleAdmin(admin.ModelAdmin):
     list_display = ('date', 'apartment', 'price', 'status')
     search_fields = ('date', 'apartment__name', 'price__label', 'status')
     list_filter = ('status', 'price', 'apartment')
+    list_per_page = 50
 
     @admin.action(description='Create Schedule for next 30 days')
     def create_schedule_for_next_30_days(self, request, queryset):
