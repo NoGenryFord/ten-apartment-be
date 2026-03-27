@@ -15,12 +15,13 @@ class ApartmentSerializer(serializers.ModelSerializer):
 
 class ScheduleSerializer(serializers.ModelSerializer):
     url_obj = serializers.HyperlinkedIdentityField(
-        view_name='schedule-detail',
+        view_name='schedules-detail',
         lookup_field='pk'
     )
 
     class Meta:
         model = Schedule
-        fields = ['id', 'date', 'apartment', 'price', 'status']
+        fields = ['id', 'date', 'apartment', 'price', 'status', 'url_obj']
+        read_only_fields = ['id', 'date', 'apartment', 'price', 'status']
 
 
