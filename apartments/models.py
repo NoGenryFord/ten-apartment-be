@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -11,6 +12,7 @@ class User(AbstractUser):
     Уникальное поле, так как по нему, в том числе будет происходить авторизация.
     """
     phone = PhoneNumberField(unique=True, null=True, blank=True)
+    email = models.EmailField(unique=True)
 
     class Meta:
         verbose_name_plural = 'Users'
@@ -64,7 +66,10 @@ class ApartmentPhoto(models.Model):
                                    on_delete=models.CASCADE,
                                    related_name='photos')
     photo = models.ImageField(upload_to='apartments/photos/')
-    order = models.PositiveIntegerField(default=0)
+    # order = models.PositiveIntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+    class Meta:
+        unique_together = ('apartments', 'photo')
 
 class ApartmentVideo(models.Model):
     """
@@ -74,7 +79,11 @@ class ApartmentVideo(models.Model):
                                    on_delete=models.CASCADE,
                                    related_name='videos')
     video = models.FileField(upload_to='apartments/videos/')
-    order = models.PositiveIntegerField(default=0)
+    # order = models.PositiveIntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+    class Meta:
+        unique_together = ('apartments', 'video')
+
 
 class ApartmentType(models.Model):
     """
@@ -111,9 +120,8 @@ class Booking(models.Model):
         CANCELED = 'canceled', 'Canceled' #Отмененно
         EXPIRED = 'expired', 'Expired' #Срок оплаты/бронированния истек
 
-    user = models.ForeignKey('apartments.User', on_delete=models.CASCADE, related_name='booking')
-    apartments = models.ForeignKey('apartments.Apartment', on_delete=models.CASCADE)
-    slots = models.ManyToManyField(Schedule, through='BookingSlot')
+    user = models.ForeignKey('apartments.User', on_delete=models.SET_NULL, null=True, blank=True, related_name='bookings')
+    email = models.EmailField(null=True, blank=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=25, choices=Status.choices, default=Status.PENDING)
     reserved_until = models.DateTimeField(null=True, blank=True) #'Deadline' оплаты
@@ -121,7 +129,8 @@ class Booking(models.Model):
     paid = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'Booking {self.pk} by {self.user} - {self.apartments} - {self.status}'
+        return f'Booking {self.pk} by {self.email} - {self.status}'
+
 
 class BookingSlot(models.Model):
     """

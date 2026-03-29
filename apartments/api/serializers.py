@@ -4,13 +4,13 @@ from apartments.models import Apartment, Schedule, ApartmentPhoto, ApartmentVide
 class ApartmentPhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApartmentPhoto
-        fields = ['id', 'photo', 'order']
+        fields = ['id', 'photo', 'updated_at']
 
 
 class ApartmentVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApartmentVideo
-        fields = ['id', 'video', 'order']
+        fields = ['id', 'video', 'updated_at']
 
 class ApartmentTypeSerializer(serializers.ModelSerializer):
     class Meta:

@@ -31,7 +31,7 @@ class ApartmentAdmin(admin.ModelAdmin):
 
 @admin.register(ApartmentPhoto)
 class ApartmentPhotoAdmin(admin.ModelAdmin):
-    list_display = ('apartments_id', 'photo', 'order')
+    list_display = ('apartments_id', 'photo')
 
 @admin.register(ApartmentVideo)
 class ApartmentVideoAdmin(admin.ModelAdmin):
@@ -42,6 +42,7 @@ class ScheduleAdmin(admin.ModelAdmin):
     list_display = ('date', 'apartment', 'price', 'status')
     search_fields = ('date', 'apartment__name', 'price__label', 'status')
     list_filter = ('status', 'price', 'apartment')
+    date_hierarchy = 'date'
     list_per_page = 50
 
     @admin.action(description='Create Schedule for next 30 days')
