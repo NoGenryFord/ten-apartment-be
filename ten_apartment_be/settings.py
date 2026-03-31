@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS')]
 
 
 # Application definition
@@ -138,7 +138,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 AUTH_USER_MODEL = 'apartments.User'
 
 CORS_ALLOWED_ORIGINS= [
+    #DEBUG
     'http://localhost:5173',
+    'http://192.168.1.66:5173',
+    #PRODUCTION
 ]
 
 REST_FRAMEWORK = {
