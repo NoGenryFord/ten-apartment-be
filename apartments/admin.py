@@ -1,10 +1,4 @@
-import calendar
-
 from django.contrib import admin
-
-#for calendar
-from django.utils.safestring import mark_safe
-from datetime import date
 
 # custom admin
 from .admin_custom.admin_inline import ApartmentScheduleInline, ApartmentPhotoInline, ApartmentVideoInline
@@ -58,3 +52,10 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ('username', 'first_name', 'last_name', 'email', 'phone', 'is_staff', 'is_superuser', 'is_active')
     search_fields = ('username', 'first_name', 'last_name', 'email', 'phone')
     list_filter = ('is_staff', 'is_superuser', 'is_active')
+
+@admin.register(ApartmentType)
+class ApartmentTypeAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+
+
