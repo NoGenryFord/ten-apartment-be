@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'rest_framework_simplejwt',
-    #phone numbers field
     'phonenumber_field'
 
 ]
@@ -59,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'apartments.middleware.RequestLoggingMiddleware',
 ]
 
 ROOT_URLCONF = 'ten_apartment_be.urls'
@@ -160,4 +160,59 @@ PHONENUMBER_DEFAULT_REGION = "CZ"
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+}
+
+LOG_DIR = BASE_DIR / 'logs'
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {name}:{lineno} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+            "level": "WARNING",
+        },
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": str(LOG_DIR / "apartment.log"),
+            "formatter": "verbose",
+        },
+        "access_file":{
+            "class": "logging.FileHandler",
+            "filename": str(LOG_DIR / "access.log"),
+            "formatter": "verbose",
+        }
+    },
+    "root": {
+        "handlers": ["console", "file"],
+        "level": "WARNING",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "apartments": {
+            "handlers": ["console", "file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "apartments.request": {
+            "handlers": ["access_file"],
+            "level": "DEBUG",
+            "propagate": False,
+        }
+    },
 }

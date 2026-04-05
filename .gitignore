@@ -111,6 +111,7 @@ celerybeat.pid
 *.pid
 *.seed
 *.pid.lock
+logs/
 
 # Type checker / static analysis
 .pyre_configuration.local

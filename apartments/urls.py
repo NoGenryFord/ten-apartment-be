@@ -2,5 +2,6 @@ from django.urls import path, include
 
 
 urlpatterns = [
-    path('api/', include('apartments.api.urls')),
+    # 1.0 api version
+    path('api/v1/', include('apartments.api.urls')),
 ]
