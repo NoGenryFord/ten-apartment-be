@@ -27,16 +27,19 @@ class ApartmentViewSet(viewsets.ReadOnlyModelViewSet):
         start_date = self.request.query_params.get('start_date')
         end_date = self.request.query_params.get('end_date')
 
-        logger.info("Apartment search requested: start_date=%s end_date=%s", start_date, end_date)
+        logger.debug("Apartment search requested: start_date=%s end_date=%s", start_date, end_date)
 
         try:
             if not start_date:
                 logger.warning("Validation error: start_date is missing")
                 return Response({"error": "start_date are required."}, status=400)
             if not end_date:
+                logger.debug("end_date is missing, using start_date as end_date")
                 end_date = start_date
             try:
+                logger.debug("Start date is %s", start_date)
                 start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+                logger.debug("End date is %s", end_date)
                 end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
 
             except:
@@ -45,11 +48,14 @@ class ApartmentViewSet(viewsets.ReadOnlyModelViewSet):
 
             if end_date == start_date:
                 end_date += timedelta(days=1)
+                logger.debug("end_date is the same as start_date, adjusted end_date to %s", end_date)
 
             night_needed = (end_date - start_date).days
             actual_end_date = end_date - timedelta(days=1)
+            logger.debug("Actual end date is %s", actual_end_date)
 
             if night_needed < 0:
+                logger.warning("Validation error: night_needed is negative")
                 return Response({"error": "night_needed must be greater than 0"}, status=400)
 
 

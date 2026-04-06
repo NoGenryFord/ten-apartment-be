@@ -7,6 +7,10 @@ from .admin_custom.calendar_windget import schedule_calendar
 
 from .models import Apartment, User, Schedule, Price, ApartmentType, Booking, BookingSlot, ApartmentPhoto, ApartmentVideo
 
+import logging
+
+logger = logging.getLogger("django")
+
 @admin.register(Apartment)
 class ApartmentAdmin(admin.ModelAdmin):
     readonly_fields = ('schedule_calendar',)
