@@ -6,13 +6,15 @@ TokenObtainPairView,
 TokenRefreshView,
 )
 
-from .view import ApartmentViewSet, ScheduleViewSet
+from .view import ApartmentViewSet, ScheduleViewSet, APIRootView, BookingViewSet
 
 router = routers.DefaultRouter()
 router.register(r'apartments', ApartmentViewSet, basename='apartments')
 router.register(r'schedules', ScheduleViewSet, basename='schedules')
+router.register(r'bookings', BookingViewSet, basename='bookings')
 
 urlpatterns = [
+    path('', APIRootView.as_view(), name='api-root'),
     path('', include(router.urls)),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

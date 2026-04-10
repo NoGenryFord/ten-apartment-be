@@ -52,8 +52,6 @@ class Apartment(models.Model):
     name = models.CharField(max_length=100)
     type = models.ForeignKey('apartments.ApartmentType', on_delete=models.CASCADE)
     description = models.TextField()
-    # photo = models.ImageField(upload_to='apartments/', null=True, blank=True)
-    # video = models.FileField(upload_to='apartments/', null=True, blank=True)
 
     def __str__(self):
         return self.name

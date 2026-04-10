@@ -15,7 +15,7 @@ logger = logging.getLogger("django")
 class ApartmentAdmin(admin.ModelAdmin):
     readonly_fields = ('schedule_calendar',)
     fields = ('name', 'type', 'description', 'schedule_calendar')
-    list_display = ('name', 'type', 'description')
+    list_display = ('id', 'name', 'type', 'description')
     search_fields = ('name', 'description', 'type')
     list_filter = ('type',)
     inlines = [ApartmentScheduleInline, ApartmentPhotoInline, ApartmentVideoInline]
@@ -37,7 +37,7 @@ class ApartmentVideoAdmin(admin.ModelAdmin):
 
 @admin.register(Schedule)
 class ScheduleAdmin(admin.ModelAdmin):
-    list_display = ('date', 'apartment', 'price', 'status')
+    list_display = ('id','date', 'apartment', 'price', 'status')
     search_fields = ('date', 'apartment__name', 'price__label', 'status')
     list_filter = ('status', 'price', 'apartment')
     date_hierarchy = 'date'
@@ -53,13 +53,18 @@ class PriceAdmin(admin.ModelAdmin):
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'first_name', 'last_name', 'email', 'phone', 'is_staff', 'is_superuser', 'is_active')
+    list_display = ('id', 'username', 'first_name', 'last_name', 'email', 'phone', 'is_staff', 'is_superuser', 'is_active')
     search_fields = ('username', 'first_name', 'last_name', 'email', 'phone')
     list_filter = ('is_staff', 'is_superuser', 'is_active')
 
 @admin.register(ApartmentType)
 class ApartmentTypeAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('id', 'name',)
     search_fields = ('name',)
 
+@admin.register(Booking)
+class BookingAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'email', 'status', 'total_price', 'created_at', 'reserved_until', 'paid')
 
+@admin.register(BookingSlot)
+class BookingSlotAdmin(admin.ModelAdmin):...

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apartments.models import Apartment, Schedule, ApartmentPhoto, ApartmentVideo, ApartmentType
+from apartments.models import Apartment, Schedule, ApartmentPhoto, ApartmentVideo, ApartmentType, Booking
 
 class ApartmentPhotoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -59,3 +59,36 @@ class ScheduleSerializer(serializers.ModelSerializer):
         fields = ['id', 'date', 'apartment', 'price_value', 'status', 'url_obj']
 
 
+class BookingSerializer(serializers.ModelSerializer):
+    url_obj = serializers.HyperlinkedIdentityField(
+        view_name='bookings-detail',
+        lookup_field='pk'
+    )
+
+    class Meta:
+        model = Booking
+        fields = ["user", "email", "total_price", "status", "reserved_until", "created_at", "paid", "url_obj"]
+
+
+class CreateBookingSerializer(serializers.Serializer):
+    apartment_id = serializers.IntegerField()
+    start_date = serializers.DateField()
+    end_date = serializers.DateField()
+
+
+
+    def validate(self, data):
+        if data['start_date'] >= data['end_date']:
+            raise serializers.ValidationError({"dates": "Check in date must be before end date"})
+        return data
+
+class StartPaymentSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    first_name = serializers.CharField(max_length=50)
+    last_name = serializers.CharField(max_length=50)
+
+class PaymentResultSerializer(serializers.ModelSerializer):
+    result = serializers.ChoiceField(choices=["success", "failed"])
+    class Meta:
+        model = Booking
+        fields = ['result']
