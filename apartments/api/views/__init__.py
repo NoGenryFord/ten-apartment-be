@@ -1,0 +1,1 @@
+from .apartment import ApartmentViewSet

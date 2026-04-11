@@ -6,7 +6,8 @@ TokenObtainPairView,
 TokenRefreshView,
 )
 
-from .view import ApartmentViewSet, ScheduleViewSet, APIRootView, BookingViewSet
+from .view import ScheduleViewSet, APIRootView, BookingViewSet
+from .views import ApartmentViewSet
 
 router = routers.DefaultRouter()
 router.register(r'apartments', ApartmentViewSet, basename='apartments')
