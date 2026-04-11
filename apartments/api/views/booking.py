@@ -101,9 +101,12 @@ class BookingViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"])
     def start_payment(self, request, pk=None):
         """
+        POST /api/v1/booking/{booking_id}/start_payment/
+
         Скрытая регистрация: получение емейла и создание учетки.
 
         так-же тут вызывается платежка (на период разработки заглушка)
+
         """
         booking = self.get_object()
 
@@ -198,6 +201,40 @@ class BookingViewSet(viewsets.ModelViewSet):
 
             return Response({
                 "message": "Payment failed",
+                "booking_id": booking.id,
+                "status": booking.status,
+            },
+                status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["post"])
+    def cancel_payment(self, request, pk=None):
+        """
+        POST /api/v1/booking/{booking_id}/cancel_payment/
+
+        Отмена брони пользователем (до оплаты)
+        """
+        booking = self.get_object()
+
+        with transaction.atomic():
+            if booking.status != Booking.Status.PENDING:
+                return Response({"error": "Booking is not in pending status"},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if booking.status == Booking.Status.EXPIRED:
+                return Response({"error": "Booking has already expired"},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            booking.status = Booking.Status.CANCELED
+            booking.paid = False
+            booking.save(update_fields=["status", "paid"])
+
+            slots = BookingSlot.objects.select_related("schedule").filter(booking=booking)
+            for slot in slots:
+                slot.schedule.status = Schedule.Status.AVAILABLE
+                slot.schedule.save(update_fields=["status"])
+
+            return Response({
+                "message": "Booking has been canceled",
                 "booking_id": booking.id,
                 "status": booking.status,
             },
