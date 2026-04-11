@@ -139,6 +139,9 @@ class BookingSlot(models.Model):
     schedule = models.ForeignKey(Schedule, on_delete=models.PROTECT)
     price_snapshot = models.DecimalField(max_digits=10, decimal_places=2)
 
+    def __str__(self):
+        return f'Booking id - {self.booking.pk}, schedule - {self.schedule}, price - {self.price_snapshot}'
+
     class Meta:
         unique_together = ('booking', 'schedule')  # один слот не может войти в бронь дважды
 
