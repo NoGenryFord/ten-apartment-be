@@ -1,9 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
-from django.utils import timezone
 
 from phonenumber_field.modelfields import PhoneNumberField
+
+from geopy.geocoders import Nominatim
+
+import logging
+logger = logging.getLogger("apartments")
+
+
 
 class User(AbstractUser):
     """
@@ -66,6 +72,21 @@ class Apartment(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        # Если адрес указан, а координат нет (или надо обновить)
+        if self.address and (not self.latitude or not self.longitude):
+            geolocator = Nominatim(user_agent="apartments")
+            try:
+                location = geolocator.geocode(self.address)
+                if location:
+                    self.latitude = location.latitude
+                    self.longitude = location.longitude
+            except Exception as e:
+                logger.error(f"Error with geocoding address {self.address}: {e}")
+        
+        super().save(*args, **kwargs)
+
 
 class ApartmentPhoto(models.Model):
     """
