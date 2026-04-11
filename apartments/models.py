@@ -52,6 +52,17 @@ class Apartment(models.Model):
     name = models.CharField(max_length=100)
     type = models.ForeignKey('apartments.ApartmentType', on_delete=models.CASCADE)
     description = models.TextField()
+    max_guests = models.PositiveIntegerField(default=0)
+
+    address = models.CharField(max_length=255, null=True, blank=True)
+
+    #Coordinates
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+
+    class Meta:
+        unique_together = ('name', 'type')
+        ordering = ('name',)
 
     def __str__(self):
         return self.name
@@ -144,5 +155,4 @@ class BookingSlot(models.Model):
 
     class Meta:
         unique_together = ('booking', 'schedule')  # один слот не может войти в бронь дважды
-
 
