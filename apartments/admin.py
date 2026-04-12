@@ -14,7 +14,7 @@ logger = logging.getLogger("django")
 @admin.register(Apartment)
 class ApartmentAdmin(admin.ModelAdmin):
     readonly_fields = ('schedule_calendar',)
-    fields = ('name', 'type', 'description', 'schedule_calendar', "address")
+    fields = ('name', 'type', 'description', 'schedule_calendar', "address", "max_guests")
     list_display = ('id', 'name', 'type', 'description')
     search_fields = ('name', 'description', 'type')
     list_filter = ('type',)

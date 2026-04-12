@@ -74,17 +74,33 @@ class Apartment(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        # Если адрес указан, а координат нет (или надо обновить)
-        if self.address and (not self.latitude or not self.longitude):
+        should_geocode = False
+
+        if self.address:
+            if not self.pk:
+                should_geocode = True
+            else:
+                try:
+                    old = Apartment.objects.get(pk=self.pk)
+                    if old.address != self.address:
+                        should_geocode = True
+                        logger.debug(f"Address changed from '{old.address}' to '{self.address}', re-geocoding")
+                except Apartment.DoesNotExist:
+                    should_geocode = True
+
+        if should_geocode:
             geolocator = Nominatim(user_agent="apartments")
             try:
                 location = geolocator.geocode(self.address)
                 if location:
                     self.latitude = location.latitude
                     self.longitude = location.longitude
+                    logger.debug(f"Geocoded '{self.address}' -> {self.latitude}, {self.longitude}")
+                else:
+                    logger.warning(f"Geocoder returned no results for address: '{self.address}'")
             except Exception as e:
-                logger.error(f"Error with geocoding address {self.address}: {e}")
-        
+                logger.error(f"Error with geocoding address '{self.address}': {e}")
+
         super().save(*args, **kwargs)
 
 

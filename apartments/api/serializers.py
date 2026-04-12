@@ -43,7 +43,7 @@ class ApartmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Apartment
-        fields = ['id', 'name', 'type', 'description', 'photos', 'videos', 'total_price', 'url_obj']
+        fields = ['id', 'name', 'type', 'description', 'photos', 'videos', 'total_price', 'max_guests', 'address', 'latitude', 'longitude', 'url_obj',]
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
