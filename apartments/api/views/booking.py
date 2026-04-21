@@ -11,6 +11,7 @@ from rest_framework.response import Response
 
 from apartments.models import Booking, BookingSlot, Schedule, User
 from apartments.api.serializers import BookingSerializer
+from apartments.services import apply_booking_status_transition
 
 from apartments.api.serializers import (
     CreateBookingSerializer,
@@ -256,16 +257,10 @@ class BookingViewSet(viewsets.GenericViewSet):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             if result == "success":
-                booking.status = Booking.Status.CONFIRMED
-                booking.paid = True
-                booking.save(update_fields=["status", "paid"])
-
-                slots = BookingSlot.objects.select_related("schedule").filter(
-                    booking=booking
+                apply_booking_status_transition(
+                    booking=booking,
+                    target_status=Booking.Status.CONFIRMED,
                 )
-                for slot in slots:
-                    slot.schedule.status = Schedule.Status.BOOKED
-                    slot.schedule.save(update_fields=["status"])
 
                 return Response(
                     {
@@ -276,16 +271,10 @@ class BookingViewSet(viewsets.GenericViewSet):
                     status=status.HTTP_200_OK,
                 )
 
-            booking.status = Booking.Status.CANCELED  # (или оставить PENDING?)
-            booking.paid = False
-            booking.save(update_fields=["status", "paid"])
-
-            slots = BookingSlot.objects.select_related("schedule").filter(
-                booking=booking
+            apply_booking_status_transition(
+                booking=booking,
+                target_status=Booking.Status.CANCELED,
             )
-            for slot in slots:
-                slot.schedule.status = Schedule.Status.AVAILABLE
-                slot.schedule.save(update_fields=["status"])
 
             return Response(
                 {
@@ -327,16 +316,10 @@ class BookingViewSet(viewsets.GenericViewSet):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            booking.status = Booking.Status.CANCELED
-            booking.paid = False
-            booking.save(update_fields=["status", "paid"])
-
-            slots = BookingSlot.objects.select_related("schedule").filter(
-                booking=booking
+            apply_booking_status_transition(
+                booking=booking,
+                target_status=Booking.Status.CANCELED,
             )
-            for slot in slots:
-                slot.schedule.status = Schedule.Status.AVAILABLE
-                slot.schedule.save(update_fields=["status"])
 
             return Response(
                 {

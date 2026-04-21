@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.contrib import admin, messages
+from django.db import transaction
 
 # custom admin
 from .admin_custom.admin_inline import (
@@ -26,6 +27,7 @@ from .models import (
 )
 
 from .forms.ApartmentActionForm import ApartmentActionForm, StartDateForm
+from .services import apply_booking_status_transition
 
 import logging
 
@@ -175,6 +177,30 @@ class BookingAdmin(admin.ModelAdmin):
         "reserved_until",
         "paid",
     )
+
+    def save_model(self, request, obj, form, change):
+        """
+        EN:
+        Keep booking/schedule consistency when status is changed from admin UI.
+
+        RU:
+        Сохраняет консистентность брони/слотов при смене статуса в админке.
+        """
+        if not change:
+            return super().save_model(request, obj, form, change)
+
+        previous_status = Booking.objects.only("status").get(pk=obj.pk).status
+        new_status = obj.status
+
+        with transaction.atomic():
+            super().save_model(request, obj, form, change)
+
+            if previous_status != new_status and new_status in {
+                Booking.Status.CONFIRMED,
+                Booking.Status.CANCELED,
+                Booking.Status.EXPIRED,
+            }:
+                apply_booking_status_transition(booking=obj, target_status=new_status)
 
 
 @admin.register(BookingSlot)
