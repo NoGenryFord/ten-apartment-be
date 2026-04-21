@@ -15,11 +15,22 @@ class ScheduleViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         """
-        Календарь для конкретной квартиры
-        /api/schedules/?apartments_id=1
+        EN:
+        Calendar for a specific apartment.
+        Supports both query params for compatibility:
+        - /api/schedules/?apartment_id=1
+        - /api/schedules/?apartment=1 (legacy)
+
+        RU:
+        Календарь для конкретной квартиры.
+        Поддерживаются оба query-параметра для совместимости:
+        - /api/schedules/?apartment_id=1
+        - /api/schedules/?apartment=1 (legacy)
         """
         queryset = super().get_queryset()
-        apartment_id = self.request.query_params.get('apartment_id')
+        apartment_id = self.request.query_params.get(
+            "apartment_id"
+        ) or self.request.query_params.get("apartment")
         if apartment_id:
             queryset = queryset.filter(apartment_id=apartment_id)
         return queryset
