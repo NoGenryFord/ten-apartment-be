@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.14"
 dependencies = [
+    "celery>=5.5.3",
     "django>=6.0.3",
     "django-cors-headers>=4.9.0",
     "django-filter>=25.2",
@@ -18,4 +19,5 @@ dependencies = [
     "phonenumberslite>=9.0.26",
     "pillow>=12.1.1",
     "psycopg2>=2.9.11",
+    "redis>=6.0.0",
 ]
