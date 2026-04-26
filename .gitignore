@@ -119,3 +119,5 @@ logs/
 # mkdocs
 /site
 
+celerybeat-schedule-shm
+celerybeat-schedule-wal
