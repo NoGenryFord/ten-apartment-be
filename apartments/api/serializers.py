@@ -53,6 +53,14 @@ class ApartmentSerializer(serializers.ModelSerializer):
         max_digits=10, decimal_places=2, read_only=True, required=False
     )
 
+    today_price = serializers.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        read_only=True,
+        required=False,
+        allow_null=True,
+    )
+
     class Meta:
         model = Apartment
         fields = [
@@ -63,6 +71,7 @@ class ApartmentSerializer(serializers.ModelSerializer):
             "photos",
             "videos",
             "total_price",
+            "today_price",
             "max_guests",
             "address",
             "latitude",

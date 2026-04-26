@@ -76,16 +76,15 @@ class BookingViewSet(viewsets.GenericViewSet):
             apt_id = data["apartment_id"]
             start_date = data["start_date"]
             end_date = data["end_date"]
-            actual_end_date = data["end_date"] - timedelta(
-                days=1
-            )  # -1 день для дня выезда
-            nights_needed = (data["end_date"] - data["start_date"]).days
+            nights_needed = (end_date - start_date).days
 
             # Транзакция и блокировка
             with transaction.atomic():
                 schedule = Schedule.objects.select_for_update().filter(
                     apartment_id=apt_id,
-                    date__range=[start_date, actual_end_date],
+                    # Checkout day is excluded, so same-day turnover is allowed.
+                    date__gte=start_date,
+                    date__lt=end_date,
                     status=Schedule.Status.AVAILABLE,
                 )
 

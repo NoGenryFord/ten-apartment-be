@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
-from django.db.models import Count, Sum, Q
+from django.db.models import Count, Sum, Q, OuterRef, Subquery, DecimalField
+from django.utils import timezone
 
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
@@ -14,9 +15,21 @@ import logging
 logger = logging.getLogger("apartments")
 
 class ApartmentViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Apartment.objects.all()
     serializer_class = ApartmentSerializer
     permission_classes = [permissions.AllowAny]
+
+    def _today_price_subquery(self):
+        today = timezone.localdate()
+        return Subquery(
+            Schedule.objects.filter(
+                apartment=OuterRef('pk'),
+                date=today,
+            ).values('price__price')[:1],
+            output_field=DecimalField(max_digits=10, decimal_places=2),
+        )
+
+    def get_queryset(self):
+        return Apartment.objects.all().annotate(today_price=self._today_price_subquery())
 
     @action(detail=False, methods=['get'])
     def search(self, request, *args, **kwargs):
@@ -52,8 +65,7 @@ class ApartmentViewSet(viewsets.ReadOnlyModelViewSet):
                 logger.debug("end_date is the same as start_date, adjusted end_date to %s", end_date)
 
             night_needed = (end_date - start_date).days
-            actual_end_date = end_date - timedelta(days=1)
-            logger.debug("Actual end date is %s", actual_end_date)
+            logger.debug("Checkout-exclusive range is [%s, %s)", start_date, end_date)
 
             if night_needed < 0:
                 logger.warning("Validation error: night_needed is negative")
@@ -65,17 +77,21 @@ class ApartmentViewSet(viewsets.ReadOnlyModelViewSet):
             Поиск в БД по фильтру: Квартира должна иметь статус AVAILABLE на все ночи в запрошенном диапазоне дат.
             """
             available_apartments = Apartment.objects.filter(
-                schedule__date__range=[start_date, actual_end_date],
+                schedule__date__gte=start_date,
+                schedule__date__lt=end_date,
                 schedule__status=Schedule.Status.AVAILABLE
             ).annotate(
                 available_nights=Count('schedule', filter=Q(
                     schedule__status=Schedule.Status.AVAILABLE,
-                    schedule__date__range=[start_date, actual_end_date]
+                    schedule__date__gte=start_date,
+                    schedule__date__lt=end_date,
                 )),
                 total_price=Sum('schedule__price__price', filter=Q(
                     schedule__status=Schedule.Status.AVAILABLE,
-                    schedule__date__range=[start_date, actual_end_date]
-                ))
+                    schedule__date__gte=start_date,
+                    schedule__date__lt=end_date,
+                )),
+                today_price=self._today_price_subquery(),
             ).filter(
                 available_nights=night_needed
             )
