@@ -203,8 +203,8 @@ class BookingViewSet(viewsets.GenericViewSet):
             booking.email = data["email"]
             booking.save(update_fields=["user", "email"])
 
-            # Заглушка платежки
-            payment_url = f"/api/v1/booking/{booking.id}/payment"
+            # Stub payment entrypoint for manual success/failure confirmation.
+            payment_url = f"/api/v1/bookings/{booking.id}/payment_result/"
 
         return Response(
             {
