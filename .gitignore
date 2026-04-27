@@ -83,6 +83,7 @@ docs/_build/
 .env.*
 *.env
 !.env.example
+sendgrid.env
 
 # PEP 582; used by e.g. PDM
 __pypackages__/

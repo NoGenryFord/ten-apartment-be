@@ -9,6 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from apartments.tasks import send_booking_confirmation_email_task
 
 from apartments.models import Booking, BookingSlot, Schedule, User
 from apartments.api.serializers import BookingSerializer
@@ -287,6 +288,10 @@ class BookingViewSet(viewsets.GenericViewSet):
                 apply_booking_status_transition(
                     booking=booking,
                     target_status=Booking.Status.CONFIRMED,
+                )
+
+                transaction.on_commit(
+                    lambda: send_booking_confirmation_email_task.delay(booking.id)
                 )
 
                 return Response(
