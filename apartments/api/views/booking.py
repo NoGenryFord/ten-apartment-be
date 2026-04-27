@@ -7,6 +7,7 @@ from django.utils import timezone
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 from apartments.models import Booking, BookingSlot, Schedule, User
@@ -202,6 +203,8 @@ class BookingViewSet(viewsets.GenericViewSet):
             booking.email = data["email"]
             booking.save(update_fields=["user", "email"])
 
+            refresh = RefreshToken.for_user(user)
+
             # Stub payment entrypoint for manual success/failure confirmation.
             payment_url = f"/api/v1/bookings/{booking.id}/payment_result/"
 
@@ -216,6 +219,16 @@ class BookingViewSet(viewsets.GenericViewSet):
                     if booking.reserved_until
                     else None
                 ),
+                "auth": {
+                    "access": str(refresh.access_token),
+                    "refresh": str(refresh),
+                    "user": {
+                        "id": user.id,
+                        "email": user.email,
+                        "first_name": user.first_name,
+                        "last_name": user.last_name,
+                    },
+                },
             },
             status=status.HTTP_201_CREATED,
         )

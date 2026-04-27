@@ -7,12 +7,13 @@ TokenRefreshView,
 )
 
 from .view import APIRootView
-from .views import ApartmentViewSet, ScheduleViewSet, BookingViewSet
+from .views import ApartmentViewSet, ScheduleViewSet, BookingViewSet, UserViewSet
 
 router = routers.DefaultRouter()
 router.register(r'apartments', ApartmentViewSet, basename='apartments')
 router.register(r'schedules', ScheduleViewSet, basename='schedules')
 router.register(r'bookings', BookingViewSet, basename='bookings')
+router.register(r'users', UserViewSet, basename='users')
 
 urlpatterns = [
     path('', APIRootView.as_view(), name='api-root'),

@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from rest_framework import serializers
 from apartments.models import (
     Apartment,
@@ -7,6 +9,7 @@ from apartments.models import (
     ApartmentType,
     Tag,
     Booking,
+    BookingSlot,
     User,
 )
 
@@ -120,6 +123,58 @@ class BookingSerializer(serializers.ModelSerializer):
             "paid",
             "url_obj",
         ]
+
+
+class BookingHistorySerializer(serializers.ModelSerializer):
+    apartment_id = serializers.SerializerMethodField()
+    apartment_name = serializers.SerializerMethodField()
+    check_in = serializers.SerializerMethodField()
+    check_out = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Booking
+        fields = [
+            "id",
+            "status",
+            "total_price",
+            "paid",
+            "created_at",
+            "apartment_id",
+            "apartment_name",
+            "check_in",
+            "check_out",
+        ]
+
+    def _ordered_slots(self, obj: Booking):
+        return (
+            BookingSlot.objects.filter(booking=obj)
+            .select_related("schedule__apartment")
+            .order_by("schedule__date")
+        )
+
+    def get_apartment_id(self, obj):
+        first_slot = self._ordered_slots(obj).first()
+        if not first_slot:
+            return None
+        return first_slot.schedule.apartment_id
+
+    def get_apartment_name(self, obj):
+        first_slot = self._ordered_slots(obj).first()
+        if not first_slot:
+            return None
+        return first_slot.schedule.apartment.name
+
+    def get_check_in(self, obj):
+        first_slot = self._ordered_slots(obj).first()
+        if not first_slot:
+            return None
+        return first_slot.schedule.date
+
+    def get_check_out(self, obj):
+        last_slot = self._ordered_slots(obj).last()
+        if not last_slot:
+            return None
+        return last_slot.schedule.date + timedelta(days=1)
 
 
 class CreateBookingSerializer(serializers.Serializer):
