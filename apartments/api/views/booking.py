@@ -181,26 +181,41 @@ class BookingViewSet(viewsets.GenericViewSet):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            payload = StartPaymentSerializer(data=request.data)
+            payload = StartPaymentSerializer(
+                data=request.data, context={"request": request}
+            )
             payload.is_valid(raise_exception=True)
             data = payload.validated_data
 
-            # Авто-регистрация
-            user, created = User.objects.get_or_create(
-                email=data["email"],
-                defaults={
-                    "username": data["email"],
-                    "first_name": data.get("first_name", ""),
-                    "last_name": data.get("last_name", ""),
-                },
-            )
-            if created:
-                user.set_unusable_password()
+            if request.user.is_authenticated:
+                user = request.user
+            else:
+                user = User.objects.filter(email=data["email"]).first()
+
+                if user:
+                    if user.has_usable_password() and not user.check_password(
+                        data["password"]
+                    ):
+                        return Response(
+                            {"error": "Invalid email or password"},
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+                    if not user.has_usable_password():
+                        user.set_password(data["password"])
+                else:
+                    user = User(
+                        email=data["email"],
+                        username=data["email"],
+                    )
+                    user.set_password(data["password"])
+                    logger.info(f"Created user with email {user.email}")
+
+                user.first_name = data.get("first_name", user.first_name)
+                user.last_name = data.get("last_name", user.last_name)
                 user.save()
-                logger.info(f"Created user with email {user.email}")
 
             booking.user = user
-            booking.email = data["email"]
+            booking.email = user.email
             booking.save(update_fields=["user", "email"])
 
             refresh = RefreshToken.for_user(user)

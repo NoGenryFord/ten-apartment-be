@@ -191,9 +191,30 @@ class CreateBookingSerializer(serializers.Serializer):
 
 
 class StartPaymentSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    first_name = serializers.CharField(max_length=50)
-    last_name = serializers.CharField(max_length=50)
+    email = serializers.EmailField(required=False)
+    first_name = serializers.CharField(max_length=50, required=False, allow_blank=True)
+    last_name = serializers.CharField(max_length=50, required=False, allow_blank=True)
+    password = serializers.CharField(write_only=True, required=False, min_length=8)
+
+    def validate(self, attrs):
+        request = self.context.get("request")
+        is_authenticated = bool(getattr(request, "user", None) and request.user.is_authenticated)
+
+        if is_authenticated:
+            provided_email = attrs.get("email")
+            if provided_email and provided_email != request.user.email:
+                raise serializers.ValidationError(
+                    {"email": "Email must match the authenticated user."}
+                )
+            return attrs
+
+        required_fields = ("email", "first_name", "last_name", "password")
+        missing = [field for field in required_fields if not attrs.get(field)]
+        if missing:
+            raise serializers.ValidationError(
+                {field: "This field is required." for field in missing}
+            )
+        return attrs
 
 
 class PaymentResultSerializer(serializers.ModelSerializer):
@@ -220,8 +241,29 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         write_only=True, required=True, min_length=8
     )
 
+    class Meta:
+        model = User
+        fields = ["email", "first_name", "last_name", "password", "password_confirm"]
+
     def validate_email(self, value):
-        pass
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("User with this email already exists.")
+        return value
+
+    def validate(self, attrs):
+        if attrs["password"] != attrs["password_confirm"]:
+            raise serializers.ValidationError(
+                {"password_confirm": "Password and confirmation do not match."}
+            )
+        return attrs
+
+    def create(self, validated_data):
+        validated_data.pop("password_confirm", None)
+        password = validated_data.pop("password")
+        user = User(**validated_data, username=validated_data["email"])
+        user.set_password(password)
+        user.save()
+        return user
 
 
 class ChangePasswordViewSerializer(serializers.Serializer):
