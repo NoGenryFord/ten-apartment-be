@@ -16,6 +16,7 @@ from django.utils import timezone
 
 from .models import (
     Apartment,
+    Tag,
     User,
     Schedule,
     Price,
@@ -40,6 +41,7 @@ class ApartmentAdmin(admin.ModelAdmin):
     fields = (
         "name",
         "type",
+        "tags",
         "description",
         "schedule_calendar",
         "address",
@@ -50,6 +52,7 @@ class ApartmentAdmin(admin.ModelAdmin):
     list_filter = ("type",)
     inlines = [ApartmentScheduleInline, ApartmentPhotoInline, ApartmentVideoInline]
     list_per_page = 50
+    filter_horizontal = ("tags",)
 
     actions = ("create_schedule_for_next_30_days",)
     action_form = ApartmentActionForm
@@ -162,6 +165,12 @@ class ApartmentTypeAdmin(admin.ModelAdmin):
         "id",
         "name",
     )
+    search_fields = ("name",)
+
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ("id", "name")
     search_fields = ("name",)
 
 

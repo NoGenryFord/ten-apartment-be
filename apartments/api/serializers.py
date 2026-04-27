@@ -5,6 +5,7 @@ from apartments.models import (
     ApartmentPhoto,
     ApartmentVideo,
     ApartmentType,
+    Tag,
     Booking,
     User,
 )
@@ -28,6 +29,12 @@ class ApartmentTypeSerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
 
 
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ["id", "name"]
+
+
 class ApartmentSerializer(serializers.ModelSerializer):
     """
     Сериализатор для модели Квартира. Включает в себя связанные фото, видео и тип квартиры.\n
@@ -47,6 +54,7 @@ class ApartmentSerializer(serializers.ModelSerializer):
     photos = ApartmentPhotoSerializer(many=True, read_only=True)
     videos = ApartmentVideoSerializer(many=True, read_only=True)
     type = ApartmentTypeSerializer(read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
 
     # Не обязательное поле, заполняется только в случае поиска по датам
     total_price = serializers.DecimalField(
@@ -70,6 +78,7 @@ class ApartmentSerializer(serializers.ModelSerializer):
             "description",
             "photos",
             "videos",
+            "tags",
             "total_price",
             "today_price",
             "max_guests",
