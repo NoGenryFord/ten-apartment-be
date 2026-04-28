@@ -11,6 +11,7 @@ from .admin_custom.admin_inline import (
 )
 from .admin_custom.calendar_windget import schedule_calendar
 
+from apartments.models import Inquiry
 from django.utils import timezone
 
 
@@ -215,3 +216,11 @@ class BookingAdmin(admin.ModelAdmin):
 
 @admin.register(BookingSlot)
 class BookingSlotAdmin(admin.ModelAdmin): ...
+
+
+@admin.register(Inquiry)
+class InquiryAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "contact", "apartment", "created_at")
+    list_filter = ("apartment",)
+    search_fields = ("name", "contact", "message")
+    readonly_fields = ("created_at",)

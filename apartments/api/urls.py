@@ -7,7 +7,7 @@ TokenRefreshView,
 )
 
 from .view import APIRootView
-from .views import ApartmentViewSet, ScheduleViewSet, BookingViewSet, UserViewSet
+from .views import ApartmentViewSet, ScheduleViewSet, BookingViewSet, UserViewSet, InquiryCreateView
 
 router = routers.DefaultRouter()
 router.register(r'apartments', ApartmentViewSet, basename='apartments')
@@ -20,4 +20,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('inquiries/', InquiryCreateView.as_view(), name='inquiries-create'),
 ]

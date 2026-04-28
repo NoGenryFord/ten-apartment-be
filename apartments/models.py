@@ -260,3 +260,31 @@ class BookingSlot(models.Model):
             "booking",
             "schedule",
         )  # один слот не может войти в бронь дважды
+
+
+class Inquiry(models.Model):
+    """
+    Заявка с контактной формы. Хранит имя, контакт (телефон/email) и сообщение.
+    Опционально привязана к конкретной квартире.
+    """
+
+    name = models.CharField(max_length=255, verbose_name="Name")
+    contact = models.CharField(max_length=255, verbose_name="Phone or Email")
+    message = models.TextField(verbose_name="Message")
+    apartment = models.ForeignKey(
+        "apartments.Apartment",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="inquiries",
+        verbose_name="Apartment",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ("-created_at",)
+        verbose_name_plural = "Inquiries"
+
+    def __str__(self):
+        apartment_part = f" [{self.apartment}]" if self.apartment_id else ""
+        return f"Inquiry from {self.name}{apartment_part} at {self.created_at:%Y-%m-%d %H:%M}"

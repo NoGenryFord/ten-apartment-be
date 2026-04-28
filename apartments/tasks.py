@@ -2,10 +2,11 @@ import logging
 
 from celery import shared_task
 
-from apartments.models import Booking
+from apartments.models import Booking, Inquiry
 from apartments.services import (
     reconcile_reserved_schedules,
     send_booking_confirmation_email,
+    send_inquiry_notification_email,
 )
 
 logger = logging.getLogger("apartments")
@@ -52,3 +53,22 @@ def send_booking_confirmation_email_task(self, booking_id: int):
         status_code,
     )
     return {"booking_id": booking.id, "sent": True, "status_code": status_code}
+
+
+@shared_task(
+    bind=True,
+    autoretry_for=(Exception,),
+    dont_autoretry_for=(ValueError,),
+    retry_backoff=True,
+    max_retries=3,
+)
+def send_inquiry_notification_task(self, inquiry_id: int):
+    inquiry = Inquiry.objects.select_related("apartment").get(pk=inquiry_id)
+    status_code = send_inquiry_notification_email(inquiry)
+    logger.info(
+        "Inquiry notification email sent for inquiry=%s from=%s sendgrid_status=%s",
+        inquiry.id,
+        inquiry.contact,
+        status_code,
+    )
+    return {"inquiry_id": inquiry.id, "sent": True, "status_code": status_code}

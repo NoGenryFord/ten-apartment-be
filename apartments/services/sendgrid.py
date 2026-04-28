@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
-from apartments.models import Booking, BookingSlot
+from apartments.models import Booking, BookingSlot, Inquiry
 
 
 SENDGRID_ENV_PATH = Path(__file__).resolve().parents[2] / "endgrid.env"
@@ -64,6 +64,55 @@ def send_booking_confirmation_email(booking: Booking) -> int:
             f"Check-in: {check_in}\n"
             f"Check-out: {check_out}\n"
             f"Total price: {booking.total_price} CZK\n"
+        ),
+    )
+
+    client = SendGridAPIClient(api_key)
+    response = client.send(message)
+    return response.status_code
+
+
+def send_inquiry_notification_email(inquiry: Inquiry) -> int:
+    """Send a notification to the owner when a contact form inquiry is submitted."""
+    api_key = getattr(settings, "SENDGRID_API_KEY", None) or os.getenv(
+        "SENDGRID_API_KEY"
+    )
+    from_email = getattr(settings, "SENDGRID_FROM_EMAIL", None) or os.getenv(
+        "SENDGRID_FROM_EMAIL"
+    )
+    owner_email = getattr(settings, "OWNER_EMAIL", None) or os.getenv("OWNER_EMAIL")
+
+    if not api_key:
+        raise ValueError("SENDGRID_API_KEY is not configured.")
+    if not from_email:
+        raise ValueError("SENDGRID_FROM_EMAIL is not configured.")
+    if not owner_email:
+        raise ValueError("OWNER_EMAIL is not configured.")
+
+    apartment_line = (
+        f"<br /><strong>Apartment:</strong> {inquiry.apartment}"
+        if inquiry.apartment
+        else ""
+    )
+
+    message = Mail(
+        from_email=from_email,
+        to_emails=owner_email,
+        subject=f"New inquiry from {inquiry.name}",
+        html_content=(
+            f"<p>You received a new inquiry from the website.</p>"
+            f"<p>"
+            f"<strong>Name:</strong> {inquiry.name}<br />"
+            f"<strong>Contact:</strong> {inquiry.contact}"
+            f"{apartment_line}"
+            f"</p>"
+            f"<p><strong>Message:</strong><br />{inquiry.message}</p>"
+        ),
+        plain_text_content=(
+            f"New inquiry from {inquiry.name}\n\n"
+            f"Contact: {inquiry.contact}\n"
+            + (f"Apartment: {inquiry.apartment}\n" if inquiry.apartment else "")
+            + f"\nMessage:\n{inquiry.message}\n"
         ),
     )
 

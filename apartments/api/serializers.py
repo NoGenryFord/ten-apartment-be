@@ -11,6 +11,7 @@ from apartments.models import (
     Booking,
     BookingSlot,
     User,
+    Inquiry,
 )
 
 
@@ -199,7 +200,9 @@ class StartPaymentSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         request = self.context.get("request")
-        is_authenticated = bool(getattr(request, "user", None) and request.user.is_authenticated)
+        is_authenticated = bool(
+            getattr(request, "user", None) and request.user.is_authenticated
+        )
 
         if is_authenticated:
             provided_email = attrs.get("email")
@@ -285,3 +288,10 @@ class ChangePasswordViewSerializer(serializers.Serializer):
                 "New password and confirmation do not match."
             )
         return data
+
+
+class InquirySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Inquiry
+        fields = ["id", "name", "contact", "message", "apartment", "created_at"]
+        read_only_fields = ["id", "created_at"]
