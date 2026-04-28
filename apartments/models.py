@@ -70,6 +70,10 @@ class Apartment(models.Model):
     type = models.ForeignKey("apartments.ApartmentType", on_delete=models.CASCADE)
     description = models.TextField()
     max_guests = models.PositiveIntegerField(default=0)
+    area = models.DecimalField(
+        max_digits=7, decimal_places=2, null=True, blank=True,
+        verbose_name="Area (m²)",
+    )
 
     tags = models.ManyToManyField(
         "apartments.Tag",

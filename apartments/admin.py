@@ -46,8 +46,9 @@ class ApartmentAdmin(admin.ModelAdmin):
         "schedule_calendar",
         "address",
         "max_guests",
+        "area",
     )
-    list_display = ("id", "name", "type", "description")
+    list_display = ("id", "name", "type", "description", "area", "max_guests")
     search_fields = ("name", "description", "type")
     list_filter = ("type",)
     inlines = [ApartmentScheduleInline, ApartmentPhotoInline, ApartmentVideoInline]

@@ -89,6 +89,7 @@ class ApartmentSerializer(serializers.ModelSerializer):
             "latitude",
             "longitude",
             "url_obj",
+            "area",
         ]
 
 
