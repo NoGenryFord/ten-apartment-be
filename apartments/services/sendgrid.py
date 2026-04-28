@@ -18,8 +18,12 @@ def send_booking_confirmation_email(booking: Booking) -> int:
     if not booking.email:
         raise ValueError("Booking email is missing.")
 
-    api_key = getattr(settings, "SENDGRID_API_KEY", None) or os.getenv("SENDGRID_API_KEY")
-    from_email = getattr(settings, "SENDGRID_FROM_EMAIL", None) or os.getenv("SENDGRID_FROM_EMAIL")
+    api_key = getattr(settings, "SENDGRID_API_KEY", None) or os.getenv(
+        "SENDGRID_API_KEY"
+    )
+    from_email = getattr(settings, "SENDGRID_FROM_EMAIL", None) or os.getenv(
+        "SENDGRID_FROM_EMAIL"
+    )
 
     if not api_key:
         raise ValueError("SENDGRID_API_KEY is not configured.")
@@ -37,7 +41,9 @@ def send_booking_confirmation_email(booking: Booking) -> int:
     apartment = slots[0].schedule.apartment
     check_in = slots[0].schedule.date.strftime("%d.%m.%Y")
     check_out = slots[-1].schedule.date.strftime("%d.%m.%Y")
-    guest_name = booking.user.first_name if booking.user and booking.user.first_name else "guest"
+    guest_name = (
+        booking.user.first_name if booking.user and booking.user.first_name else "guest"
+    )
 
     message = Mail(
         from_email=from_email,
@@ -50,7 +56,6 @@ def send_booking_confirmation_email(booking: Booking) -> int:
             f"<strong>Check-in:</strong> {check_in}<br />"
             f"<strong>Check-out:</strong> {check_out}<br />"
             f"<strong>Total price:</strong> {booking.total_price} CZK<br />"
-            f"<strong>Booking ID:</strong> {booking.id}</p>"
         ),
         plain_text_content=(
             f"Hello, {guest_name}!\n\n"
@@ -59,7 +64,6 @@ def send_booking_confirmation_email(booking: Booking) -> int:
             f"Check-in: {check_in}\n"
             f"Check-out: {check_out}\n"
             f"Total price: {booking.total_price} CZK\n"
-            f"Booking ID: {booking.id}\n"
         ),
     )
 
